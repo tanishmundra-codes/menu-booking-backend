@@ -1,7 +1,7 @@
 const Joi = require("joi");
 
 const createCategorySchema = Joi.object({
-    name: Joi.string().trim().min(1).required,
+    name: Joi.string().trim().min(1).required(),
 
     image: Joi.string().uri().optional(),
 
@@ -15,7 +15,7 @@ const createCategorySchema = Joi.object({
         otherwise: Joi.forbidden(),
     }),
 
-    is_active: Joi.boolean.optional(),
+    is_active: Joi.boolean().optional(),
 });
 
 const updateCategorySchema = Joi.object({
