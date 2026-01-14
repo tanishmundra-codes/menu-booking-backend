@@ -2,10 +2,8 @@ const Category = require("../models/category.model");
 
 async function createCategory(req, res) {
     try {
-        // Read input
         const { name, image, description, tax_applicable, tax_percentage, is_active } = req.body;
 
-        // Apply logic
         const newCategory = new Category({
             name,
             image,
@@ -14,11 +12,9 @@ async function createCategory(req, res) {
             tax_percentage,
             is_active
         });
-        
-        // Query DB
+
         const savedCategory = await newCategory.save();
-        
-        // Return response
+
         return res.status(201).json({
             success: true,
             data: savedCategory,
@@ -43,25 +39,28 @@ async function createCategory(req, res) {
 
 async function getAllCategories(req, res) {
     try {
-        let { limit, page } = req.query;
+        let { is_active, limit, page } = req.query;
 
-        if (!page) {
-            page = 1;
+        page = page ? Number(page) : 1;
+        limit = limit ? Number(limit) : 10;
+
+        const skip = (page - 1) * limit;
+
+        let filter = {};
+
+        if (is_active !== undefined) {
+            if (is_active === "true") {
+                filter.is_active = true;
+            } else if (is_active === "false") {
+                filter.is_active = false;
+            }
         }
-        if (!limit) {
-            limit = 10;
-        }
 
-        limit = Number(limit);
-        page = Number(page);
-
-        let skip = (page - 1) * limit
-
-        const categories = await Category.find({})
+        const categories = await Category.find(filter)
             .skip(skip)
-            .limit(limit)
+            .limit(limit);
 
-        const total = await Category.countDocuments();
+        const total = await Category.countDocuments(filter);
 
         return res.status(200).json({
             success: true,
@@ -70,6 +69,7 @@ async function getAllCategories(req, res) {
             total,
             data: categories,
         });
+
     } catch (error) {
         return res.status(500).json({
             success: false,
@@ -78,6 +78,7 @@ async function getAllCategories(req, res) {
         });
     }
 }
+
 
 module.exports = {
     createCategory,
