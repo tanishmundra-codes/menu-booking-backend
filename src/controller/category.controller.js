@@ -91,7 +91,6 @@ async function updateCategory(req, res) {
             "description",
             "tax_applicable",
             "tax_percentage",
-            "is_active",
         ];
 
         allowedFields.forEach((field) => {
@@ -135,10 +134,41 @@ async function updateCategory(req, res) {
     }
 }
 
+async function deleteCategory(req, res) {
+    try {
+        const { id } = req.params;
 
+        const updatedCategory = await Category.findByIdAndUpdate(
+            id,
+            { is_active: false },
+            { new: true, runValidators: true }
+        );
+
+        if (!updatedCategory) {
+            return res.status(404).json({
+                success: false,
+                message: "Category not found",
+            });
+        }
+
+        return res.status(200).json({
+            success: true,
+            data: updatedCategory,
+            message: "Category deactivated successfully",
+        });
+
+    } catch (error) {
+        return res.status(500).json({
+            success: false,
+            message: "Server Error",
+            error: error.message,
+        });
+    }
+}
 
 module.exports = {
     createCategory,
     getAllCategories,
-    updateCategory
+    updateCategory,
+    deleteCategory,
 };

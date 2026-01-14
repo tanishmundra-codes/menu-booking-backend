@@ -32,8 +32,6 @@ const updateCategorySchema = Joi.object({
         then: Joi.number().min(0).required(),
         otherwise: Joi.forbidden(),
     }),
-
-    is_active: Joi.boolean().optional(),
 });
 
 module.exports = {
