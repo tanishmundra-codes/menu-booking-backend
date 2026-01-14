@@ -79,8 +79,66 @@ async function getAllCategories(req, res) {
     }
 }
 
+async function updateCategory(req, res) {
+    try {
+        const { id } = req.params;
+
+        let updateData = {};
+
+        const allowedFields = [
+            "name",
+            "image",
+            "description",
+            "tax_applicable",
+            "tax_percentage",
+            "is_active",
+        ];
+
+        allowedFields.forEach((field) => {
+            if (req.body[field] !== undefined) {
+                updateData[field] = req.body[field];
+            }
+        });
+
+        const updatedCategory = await Category.findByIdAndUpdate(
+            id,
+            updateData,
+            { new: true, runValidators: true }
+        );
+
+        if (!updatedCategory) {
+            return res.status(404).json({
+                success: false,
+                message: "Category not found",
+            });
+        }
+
+        return res.status(200).json({
+            success: true,
+            data: updatedCategory,
+            message: "Category updated successfully",
+        });
+
+    } catch (error) {
+        if (error.code === 11000) {
+            return res.status(409).json({
+                success: false,
+                message: "Category with this name already exists",
+            });
+        }
+
+        return res.status(500).json({
+            success: false,
+            message: "Server Error",
+            error: error.message,
+        });
+    }
+}
+
+
 
 module.exports = {
     createCategory,
-    getAllCategories
+    getAllCategories,
+    updateCategory
 };
