@@ -17,5 +17,11 @@
   "bugs": {
     "url": "https://github.com/tanishmundra-codes/menu-booking-backend/issues"
   },
-  "homepage": "https://github.com/tanishmundra-codes/menu-booking-backend#readme"
+  "homepage": "https://github.com/tanishmundra-codes/menu-booking-backend#readme",
+  "dependencies": {
+    "dotenv": "^17.2.3",
+    "express": "^5.2.1",
+    "joi": "^18.0.2",
+    "mongoose": "^9.1.3"
+  }
 }
