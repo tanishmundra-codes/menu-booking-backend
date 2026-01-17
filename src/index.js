@@ -4,6 +4,8 @@ const categoryRoute = require("./routes/category.routes")
 const subcategoryRoutes = require("./routes/subcategory.routes");
 const itemRoutes = require("./routes/item.routes");
 const priceRoutes = require("./routes/price.routes");
+const availabilityRoutes = require("./routes/availability.routes");
+const bookingRoutes = require("./routes/booking.routes");
 
 const app = express();
 
@@ -13,5 +15,7 @@ app.use("/", categoryRoute);
 app.use(subcategoryRoutes);
 app.use(itemRoutes);
 app.use(priceRoutes);
+app.use(availabilityRoutes);
+app.use(bookingRoutes);
 
 module.exports = app;
