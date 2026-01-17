@@ -14,7 +14,14 @@ async function getItemPrice(req, res) {
       });
     }
 
-    const priceBreakdown = await calculateFinalPrice(item);
+    let addonIds = [];
+
+    if (req.query.addons) {
+      addonIds = req.query.addons.split(",");
+    }
+
+    const priceBreakdown = await calculateFinalPrice(item, addonIds);
+
 
     return res.status(200).json({
       success: true,
