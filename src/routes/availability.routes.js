@@ -2,7 +2,7 @@ const express = require("express");
 const {
   addAvailability,
   getAvailability,
-} = require("../controllers/availability.controller");
+} = require("../controller/availability.controller");
 
 const router = express.Router();
 

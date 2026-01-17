@@ -2,7 +2,7 @@ const express = require("express");
 const {
   bookSlot,
   getBookings,
-} = require("../controllers/booking.controller");
+} = require("../controller/booking.controller");
 
 const router = express.Router();
 
