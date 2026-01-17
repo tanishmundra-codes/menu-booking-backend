@@ -1,5 +1,7 @@
 const Category = require("../models/category.model");
 const Subcategory = require("../models/subcategory.model");
+const Addon = require("../models/addon.model");
+
 
 async function resolveTax(item) {
 
@@ -78,26 +80,43 @@ function resolveBasePrice(item) {
   throw new Error("Unsupported pricing type");
 }
 
-async function calculateFinalPrice(item) {
+async function calculateFinalPrice(item, addonIds = []) {
   const priceResult = resolveBasePrice(item);
   const taxResult = await resolveTax(item);
 
-  let tax_amount = 0;
-  if (taxResult.tax_applicable) {
-    tax_amount = (priceResult.discounted_price * taxResult.tax_percentage) / 100;
+  let addon_total = 0;
+  let addons = [];
+
+  if (addonIds.length > 0) {
+    addons = await Addon.find({
+      _id: { $in: addonIds },
+      item_id: item._id,
+      is_active: true,
+    });
+
+    addon_total = addons.reduce((sum, addon) => sum + addon.price, 0);
   }
 
-  const final_price = priceResult.discounted_price + tax_amount;
+  const subtotal = priceResult.discounted_price + addon_total;
+
+  let tax_amount = 0;
+  if (taxResult.tax_applicable) {
+    tax_amount = (subtotal * taxResult.tax_percentage) / 100;
+  }
+
+  const final_price = subtotal + tax_amount;
 
   return {
     pricing_type: item.pricing_type,
     base_price: priceResult.base_price,
     discount: priceResult.discount,
     discounted_price: priceResult.discounted_price,
+    addons_total: addon_total,
     tax_percentage: taxResult.tax_percentage,
     tax_amount,
     final_price,
   };
 }
+
 
 module.exports = { calculateFinalPrice };
