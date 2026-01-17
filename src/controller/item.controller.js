@@ -51,7 +51,15 @@ async function createItem(req, res) {
 
 async function getItems(req, res) {
   try {
-    let { parent_type, parent_id, page, limit } = req.query;
+    let {
+      parent_type,
+      parent_id,
+      page,
+      limit,
+      sortBy,
+      order,
+      search,
+    } = req.query;
 
     page = page ? Number(page) : 1;
     limit = limit ? Number(limit) : 10;
@@ -64,7 +72,22 @@ async function getItems(req, res) {
       filter.parent_id = parent_id;
     }
 
-    const items = await Item.find(filter).skip(skip).limit(limit);
+    if (search) {
+      filter.name = { $regex: search, $options: "i" };
+    }
+
+    let sort = {};
+    if (sortBy) {
+      sort[sortBy] = order === "desc" ? -1 : 1;
+    } else {
+      sort.createdAt = -1;
+    }
+
+    const items = await Item.find(filter)
+      .sort(sort)
+      .skip(skip)
+      .limit(limit);
+
     const total = await Item.countDocuments(filter);
 
     return res.status(200).json({
@@ -82,6 +105,7 @@ async function getItems(req, res) {
     });
   }
 }
+
 
 async function updateItem(req, res) {
   try {
